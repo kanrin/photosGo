@@ -3,7 +3,6 @@ package libs
 import (
 	"path/filepath"
 	"os"
-	"path"
 	"fmt"
 	"encoding/json"
 	"image"
@@ -18,8 +17,8 @@ type Items struct {
 	H    int	`json:"h"`
 }
 
-func GetPhotos(host string) []byte {
-	f, _ := getFileList(path.Join("photos"))
+func GetPhotos(host string, p string) []byte {
+	f, _ := getFileList(p)
 	return formatJSON(f, host)
 }
 
@@ -45,9 +44,11 @@ func formatJSON (f []string, host string) []byte {
 	r := []Items{}
 	for _, p := range f {
 		file, _ := os.Open(p)
-		c, _, _ := image.DecodeConfig(file)
-		url := "http://" + host + "/"
-		r = append(r, Items{url + p, c.Width, c.Height})
+		config, _, err := image.DecodeConfig(file)
+		if err == nil {
+			url := "http://" + host + "/"
+			r = append(r, Items{url + p, config.Width, config.Height})
+		}
 	}
 	data, err := json.Marshal(r)
 	if err != nil {

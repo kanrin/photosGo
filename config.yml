@@ -1,1 +1,7 @@
 port: 8000
+
+# ali
+#endPoint: "http://kanrin-photo.oss-cn-shenzhen-internal.aliyuncs.com"
+endPoint: "oss-cn-shenzhen.aliyuncs.com"
+accessKeyId: "LTAI52Qf8ivJjc2h"
+accessKeySecret: "LlgLJojyE3c4hjjHD5V9pzQ1dUd8I1"
