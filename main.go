@@ -11,10 +11,8 @@ import (
 
 func main() {
 	router := httprouter.New()
-	router.GET("/", routers.Index)
-	router.GET("/carousel/:name", routers.Carousel)
-	router.GET("/photos/:name", routers.PhotoUrl)
 	router.GET("/oss", routers.Oss)
+	router.GET("/get/:name", routers.ReadSteam)
 	config, _ := yaml.ReadFile("config.yml")
 	port, _ := config.Get("port")
 	log.Printf("listen port: %s", port)

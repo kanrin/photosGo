@@ -1,32 +1,50 @@
 package libs
 
 import (
-	"github.com/kylelemons/go-gypsy/yaml"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"fmt"
+	"encoding/json"
 )
 
-func getOssInfo() (string, string, string){
-	config, _ := yaml.ReadFile("config.yml")
-	endPoint, _ := config.Get("endPoint")
-	accessKeyId, _ := config.Get("accessKeyId")
-	accessKeySecret, _ := config.Get("accessKeySecret")
-	return endPoint, accessKeyId, accessKeySecret
+type Photos struct {
+	Src  string `json:"src"`
+	W    int	`json:"w"`
+	H    int	`json:"h"`
 }
 
-func GetPhotosOss() {
-	e, ai, as := getOssInfo()
+func GetPhotosOss() []byte {
+	e, ai, as, bn := GetOssInfo()
 	client, err := oss.New(e, ai, as)
 	if err != nil {
-		fmt.Errorf("[OSSError]: %s", err)
+		HandleError(err)
 	}
-	lsRes, err := client.ListBuckets()
+	bucket, err := client.Bucket(bn)
 	if err != nil {
-		fmt.Errorf("[OSSError]: %s", err)
+		HandleError(err)
 	}
-	fmt.Print(e)
-	fmt.Println(lsRes)
-	for _, bucket := range lsRes.Buckets {
-		fmt.Println(bucket.Name)
+
+	// 列举所有文件。
+	marker := ""
+	r := []Photos{}
+	for {
+		lsRes, err := bucket.ListObjects(oss.Marker(marker))
+		if err != nil {
+			HandleError(err)
+		}
+
+		for _, object := range lsRes.Objects {
+			signedURL := "http://localhost:8000/get/" + object.Key
+			r = append(r, Photos{signedURL, 300, 200})
+		}
+
+		if lsRes.IsTruncated {
+			marker = lsRes.NextMarker
+		} else {
+			break
+		}
 	}
+	data, err := json.Marshal(r)
+	if err != nil {
+		HandleError(err)
+	}
+	return data
 }

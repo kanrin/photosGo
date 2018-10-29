@@ -12,6 +12,6 @@ func Oss(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("content-type", "application/json")
-	libs.GetPhotosOss()
-	w.Write([]byte("ass"))
+	list := libs.GetPhotosOss()
+	w.Write(list)
 }
