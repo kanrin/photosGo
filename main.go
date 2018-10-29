@@ -12,7 +12,6 @@ import (
 func main() {
 	router := httprouter.New()
 	router.GET("/oss", routers.Oss)
-	router.GET("/get/:name", routers.ReadSteam)
 	config, _ := yaml.ReadFile("config.yml")
 	port, _ := config.Get("port")
 	log.Printf("listen port: %s", port)

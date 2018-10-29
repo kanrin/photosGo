@@ -32,8 +32,11 @@ func GetPhotosOss() []byte {
 		}
 
 		for _, object := range lsRes.Objects {
-			signedURL := "http://localhost:8000/get/" + object.Key
-			r = append(r, Photos{signedURL, 300, 200})
+			signedURL, err := bucket.SignURL(object.Key, oss.HTTPGet, 600, oss.Process("image/auto-orient,1/interlace,1/resize,m_lfit,h_720/quality,q_50"))
+			if err != nil {
+				HandleError(err)
+			}
+			r = append(r, Photos{signedURL, 1080, 720})
 		}
 
 		if lsRes.IsTruncated {
