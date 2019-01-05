@@ -36,7 +36,13 @@ func GetPhotosOss() []byte {
 			if err != nil {
 				HandleError(err)
 			}
-			r = append(r, Photos{signedURL, 1080, 720})
+			infoUrl, err := bucket.SignURL(object.Key, oss.HTTPGet, 600, oss.Process("image/info"))
+			if err != nil {
+				HandleError(err)
+			}
+			h, w, _ := ImageInfo(infoUrl)
+			width := 720 / h * w
+			r = append(r, Photos{signedURL, width, 720})
 		}
 
 		if lsRes.IsTruncated {
